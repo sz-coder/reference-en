@@ -61,15 +61,20 @@ sensVal = constrain(sensVal, 10, 150);  // limits range of sensor values to betw
 
 [float]
 === Notes and Warnings
-Because of the way the `constrain()` function is implemented, avoid using other functions inside the brackets, it may lead to incorrect results.
+Because of the way the `constrain()` is implemented, avoid using function calls and expressions inside the brackets, it will lead to incorrect behaviour.
 
-This code will yield incorrect results:
+This code will not work as expected:
 [source,arduino]
 ----
-int constrainedInput = constrain(Serial.parseInt(), minimumValue, maximumValue);   // avoid this
+int constrainedInput1 = constrain(Serial.parseInt(), minimumValue, maximumValue);   // don't do this
+value = constrain(value++, minimumValue, maximumValue);   // also don't do this
 ----
 
-Use this instead:
+Because `constrain(x, a, b)` may _evaluate_ its parameters more than once.
+
+Evaluate in this example means it's possible that `Serial.parseInt()` will get called more than once, which isn't obvious from looking at the source code.
+
+To be safe, always use `constrain()` with either fixed values or a list of variable names like this:
 [source,arduino]
 ----
 int input = Serial.parseInt();  // keep other operations outside the constrain function
